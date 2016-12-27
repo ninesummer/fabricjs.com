@@ -29,15 +29,26 @@ title: Patterns
       <option>no-repeat</option>
     </select>
   </p>
+  <p>
+    Scale with object:
+    <input type="checkbox" id="scale" value="1" checked />
+  </p>
+  <p>
+    Angle:
+    <input type="text" id="angle" value="0" />
+  </p>
 </div>
 
 <script id="main">(function() {
   var canvas = this.__canvas = new fabric.Canvas('c');
   fabric.Object.prototype.transparentCorners = false;
-
   function loadPattern(url) {
     fabric.util.loadImage(url, function(img) {
       text.fill = new fabric.Pattern({
+        source: img,
+        repeat: document.getElementById('repeat').value
+      });
+      rect.fill = new fabric.Pattern({
         source: img,
         repeat: document.getElementById('repeat').value
       });
@@ -45,17 +56,24 @@ title: Patterns
     });
   }
 
+  var rect = new fabric.Rect({
+    width: 300,
+    height: 200,
+    objectCaching: false,
+  });
   var text = new fabric.Text('Honey,\nI\'m subtle', {
-    fontSize: 250,
-    left: 50,
-    top: 0,
+    fontSize: 120,
+    left: 10,
+    top: 200,
     lineHeight: 1,
     originX: 'left',
     fontFamily: 'Helvetica',
     fontWeight: 'bold',
-    statefullCache: true
+    objectCaching: false
   });
+
   canvas.add(text);
+  canvas.add(rect);
 
   loadPattern('../assets/honey_im_subtle.png');
 
@@ -63,7 +81,15 @@ title: Patterns
     loadPattern('../assets/' + this.value);
   };
   document.getElementById('repeat').onchange = function() {
-    text.fill.repeat = this.value;
+    rect.fill.repeat = text.fill.repeat = this.value;
+    canvas.renderAll();
+  };
+  document.getElementById('scale').onclick = function() {
+    rect.fill.scaleWithObject = text.fill.scaleWithObject = this.checked;
+  };
+  document.getElementById('angle').onchange = function() {
+    rect.fill.angle = text.fill.angle = parseInt(this.value, 10);
+    rect.dirty = text.dirty = true;
     canvas.renderAll();
   };
 })();

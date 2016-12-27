@@ -71,7 +71,7 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
    * @param {Event} e Event object
    */
   onKeyDown: function(e) {
-    if (!this.isEditing) {
+    if (!this.isEditing || this.inCompositionMode) {
       return;
     }
     if (e.keyCode in this._keysMap) {
@@ -102,7 +102,7 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
    * @param {Event} e Event object
    */
   onKeyUp: function(e) {
-    if (!this.isEditing || this._copyDone) {
+    if (!this.isEditing || this._copyDone || this.inCompositionMode) {
       this._copyDone = false;
       return;
     }
@@ -149,16 +149,18 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
   /**
    * Composition start
    */
-  onCompositionStart: function() {
+  onCompositionStart: function(e) {
     this.inCompositionMode = true;
-    this.prevCompositionLength = 0;
-    this.compositionStart = this.selectionStart;
+    // during composition start selectionStart is the start of the variable part of composition
+    if (type)
+    this.compositionStart = e.target.selectionStart || this.selectionStart;
   },
 
   /**
    * Composition end
    */
-  onCompositionEnd: function() {
+  onCompositionEnd: function(e) {
+    this.onCompositionUpdate(e);
     this.inCompositionMode = false;
   },
 
@@ -166,12 +168,14 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
    * Composition update
    */
   onCompositionUpdate: function(e) {
+    console.log(e.data, e.target.selectionStart, e.target.selectionEnd);
     var data = e.data;
     this.selectionStart = this.compositionStart;
+    this.compositionEnd = e.target.selectionEnd;
     this.selectionEnd = this.selectionEnd === this.selectionStart ?
-      this.compositionStart + this.prevCompositionLength : this.selectionEnd;
-    this.insertChars(data, false);
+      this.compositionEnd || (this.compositionStart + this.prevCompositionLength) : this.selectionEnd;
     this.prevCompositionLength = data.length;
+    this.insertChars(data, false);
   },
 
   /**
