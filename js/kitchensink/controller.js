@@ -317,7 +317,7 @@ function addAccessors($scope) {
 
     var coord = getRandomLeftTop();
 
-    fabric.loadSVGFromURL('../assets/' + shapeName + '.svg', function(objects, options) {
+    fabric.loadSVGFromURL('assets/' + shapeName + '.svg', function(objects, options) {
 
       var loadedObject = fabric.util.groupSVGElements(objects, options);
 
@@ -345,7 +345,7 @@ function addAccessors($scope) {
   function addImage(imageName, minScale, maxScale) {
     var coord = getRandomLeftTop();
 
-    fabric.Image.fromURL('../assets/' + imageName, function(image) {
+    fabric.Image.fromURL('assets/' + imageName, function(image) {
 
       image.set({
         left: coord.left,
@@ -535,7 +535,7 @@ function addAccessors($scope) {
   };
 
   var pattern = new fabric.Pattern({
-    source: '/assets/escheresque.png',
+    source: 'assets/escheresque.png',
     repeat: 'repeat'
   });
 
@@ -901,7 +901,7 @@ function addAccessors($scope) {
 
   function initImagePatternBrush() {
     var img = new Image();
-    img.src = '../assets/honey_im_subtle.png';
+    img.src = 'assets/honey_im_subtle.png';
 
     $scope.texturePatternBrush = new fabric.PatternBrush(canvas);
     $scope.texturePatternBrush.source = img;
